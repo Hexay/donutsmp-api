@@ -23,6 +23,9 @@ dev = [
     "mypy>=1.14.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["donut"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
