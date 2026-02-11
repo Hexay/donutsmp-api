@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Generic, Literal, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, field_validator
 
@@ -146,7 +146,7 @@ class LeaderboardEntry(BaseModel):
 
     @field_validator("value", mode="before")
     @classmethod
-    def parse_value(cls, v):
+    def parse_value(cls, v: Any) -> float:
         return float(v) if v else 0
 
     def __str__(self) -> str:
