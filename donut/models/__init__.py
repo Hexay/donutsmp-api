@@ -17,7 +17,7 @@ class ListResponse(BaseModel, Generic[T]):
     status: int | None = None
     result: list[T] | None = None
 
-    def __iter__(self) -> Iterator[T]:
+    def __iter__(self) -> Iterator[T]:  # type: ignore[override]
         return iter(self.result or [])
 
     def __len__(self) -> int:
