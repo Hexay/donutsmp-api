@@ -1,7 +1,9 @@
 import asyncio
 import os
 import time
+
 from dotenv import load_dotenv
+
 from donut import DonutClient, PurchaseItem
 
 load_dotenv()

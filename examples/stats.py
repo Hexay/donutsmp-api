@@ -1,8 +1,10 @@
 import asyncio
 import os
+
 from dotenv import load_dotenv
+
 from donut import DonutClient
-import time
+
 load_dotenv()
 
 

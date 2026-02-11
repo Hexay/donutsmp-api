@@ -1,10 +1,12 @@
 from __future__ import annotations
-from typing import TypeVar, Generic, Iterator, Literal
+
+from collections.abc import Iterator
+from typing import Generic, Literal, TypeVar
 
 from pydantic import BaseModel, field_validator
 
-from .helpers import format_time, clean_id, format_date
 from ..helpers import format_number
+from .helpers import clean_id, format_date, format_time
 
 AuctionSort = Literal["lowest_price", "highest_price", "recently_listed", "last_listed"]
 

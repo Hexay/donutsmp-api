@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from .http import HTTPClient
 from .endpoints import (
     AuctionEndpoint,
     LeaderboardsEndpoint,
     LookupEndpoint,
     StatsEndpoint,
 )
+from .http import HTTPClient
 
 
 class DonutClient:

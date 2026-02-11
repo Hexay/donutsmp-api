@@ -6,7 +6,7 @@ from typing import Any
 import aiohttp
 import orjson
 
-from .errors import DonutAPIError, UnauthorizedError, NotFoundError, ServerError
+from .errors import DonutAPIError, NotFoundError, ServerError, UnauthorizedError
 from .ratelimit import RateLimiter
 
 

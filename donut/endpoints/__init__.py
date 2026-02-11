@@ -4,13 +4,13 @@ import asyncio
 from typing import TYPE_CHECKING, Literal
 
 from ..models import (
-    AuctionResponse,
     AuctionRequestBody,
+    AuctionResponse,
     AuctionSort,
-    TransactionHistoryResponse,
     LeaderboardResponse,
     LookupResponse,
     StatsResponse,
+    TransactionHistoryResponse,
 )
 
 if TYPE_CHECKING:

@@ -1,11 +1,11 @@
 import asyncio
 import math
+import os
 import time
 
 from dotenv import load_dotenv
 
 from donut import DonutClient, format_number
-import os
 
 load_dotenv()
 
