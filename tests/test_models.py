@@ -1,4 +1,5 @@
 import pytest
+
 from donut.models import (
     AuctionEntry,
     ContainerItem,
@@ -6,14 +7,12 @@ from donut.models import (
     Item,
     ItemData,
     LeaderboardEntry,
-    LeaderboardResponse,
     ListResponse,
     LookupResult,
     PurchaseItem,
     Seller,
     SingleResponse,
     Stats,
-    Trim,
 )
 
 
