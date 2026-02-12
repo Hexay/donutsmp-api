@@ -74,7 +74,7 @@ def find_threshold(page, start_value, end_value):
     base = next(t for p, t in PAGE_THRESHOLDS if page < p)
     roc = (start_value - end_value) / start_value if start_value else 0
     adj = next(a for r, a in ROC_ADJUSTMENTS if roc > r)
-    return max(0.80, min(0.99, base + adj))
+    return max(0.80, min(1, base + adj))
 
 async def sum_page(leaderboard_type, page, min_max=False):
     leaderboard = await get_page(leaderboard_type, page)
