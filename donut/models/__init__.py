@@ -194,8 +194,10 @@ class Stats(BaseModel):
     }
 
     def __str__(self) -> str:
-        header = self.username or "Unknown"
         lines = [f"{self._LABELS[f]}: {v}" for f in self._LABELS if (v := getattr(self, f))]
+        if not lines and not self.username:
+            return ""
+        header = self.username or "Unknown"
         return f"{header}\n" + "\n".join(lines) if lines else header
 
 

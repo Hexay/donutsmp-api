@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Literal, TypeVar, Callable, Awaitable
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING, Literal, TypeVar
 
 from ..models import (
     AuctionRequestBody,
@@ -36,7 +37,7 @@ async def run_batched(
         batch_items = items[offset:offset + len(batch_keys)]
         if i > 0:
             await asyncio.sleep(60)
-        batch_results = await asyncio.gather(*[fetch(item, key) for item, key in zip(batch_items, batch_keys)])
+        batch_results = await asyncio.gather(*[fetch(item, key) for item, key in zip(batch_items, batch_keys, strict=True)])
         results.extend(batch_results)
         offset += len(batch_keys)
     return results
@@ -134,7 +135,7 @@ class StatsEndpoint:
     def __init__(self, http: HTTPClient):
         self._http = http
 
-    def _parse(self, data: dict, username: str) -> StatsResponse:
+    def _parse(self, data: dict[str, Any], username: str) -> StatsResponse:
         response = StatsResponse.model_validate(data)
         if response.result:
             response.result.username = username

@@ -55,7 +55,8 @@ class HTTPClient:
             return {}
         if not response.ok:
             raise DonutAPIError(f"Request failed: {response.status}")
-        return orjson.loads(await response.read())
+        result: dict[str, Any] = orjson.loads(await response.read())
+        return result
 
     async def _request(
         self,
