@@ -16,9 +16,8 @@ class DonutClient:
         self,
         api_keys: str | list[str],
         timeout: float = 30.0,
-        requests_per_minute: int = 250,
     ):
-        self._http = HTTPClient(api_keys, timeout, requests_per_minute)
+        self._http = HTTPClient(api_keys, timeout)
         self.auction = AuctionEndpoint(self._http)
         self.leaderboards = LeaderboardsEndpoint(self._http)
         self.lookup = LookupEndpoint(self._http)

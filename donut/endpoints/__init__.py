@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypeVar, Callable, Awaitable
 
 from ..models import (
     AuctionRequestBody,
@@ -20,6 +20,26 @@ LeaderboardCategory = Literal[
     "money", "shards", "playtime", "kills", "deaths",
     "mobskilled", "brokenblocks", "placedblocks", "sell", "shop"
 ]
+
+T = TypeVar("T")
+U = TypeVar("U")
+
+
+async def run_batched(
+    items: list[T],
+    keys: list[list[str]],
+    fetch: Callable[[T, str], Awaitable[U]],
+) -> list[U]:
+    results: list[U] = []
+    offset = 0
+    for i, batch_keys in enumerate(keys):
+        batch_items = items[offset:offset + len(batch_keys)]
+        if i > 0:
+            await asyncio.sleep(60)
+        batch_results = await asyncio.gather(*[fetch(item, key) for item, key in zip(batch_items, batch_keys)])
+        results.extend(batch_results)
+        offset += len(batch_keys)
+    return results
 
 
 class AuctionEndpoint:
@@ -52,8 +72,14 @@ class LeaderboardsEndpoint:
         start_page: int = 1,
         end_page: int = 10,
     ) -> list[LeaderboardResponse]:
-        tasks = [self(category, page) for page in range(start_page, end_page + 1)]
-        return await asyncio.gather(*tasks)
+        pages = list(range(start_page, end_page + 1))
+        keys = self._http._rate_limiter.distribute(len(pages))
+
+        async def fetch(page: int, key: str) -> LeaderboardResponse:
+            data = await self._http.get_with_key(f"/v1/leaderboards/{category}/{page}", key)
+            return LeaderboardResponse.model_validate(data)
+
+        return await run_batched(pages, keys, fetch)
 
     async def money(self, page: int = 1) -> LeaderboardResponse:
         return await self("money", page)
@@ -95,8 +121,13 @@ class LookupEndpoint:
         return LookupResponse.model_validate(data)
 
     async def batch(self, usernames: list[str]) -> list[LookupResponse]:
-        tasks = [self(username) for username in usernames]
-        return await asyncio.gather(*tasks)
+        keys = self._http._rate_limiter.distribute(len(usernames))
+
+        async def fetch(username: str, key: str) -> LookupResponse:
+            data = await self._http.get_with_key(f"/v1/lookup/{username}", key)
+            return LookupResponse.model_validate(data)
+
+        return await run_batched(usernames, keys, fetch)
 
 
 class StatsEndpoint:
@@ -108,7 +139,10 @@ class StatsEndpoint:
         return StatsResponse.model_validate(data)
 
     async def batch(self, usernames: list[str]) -> list[StatsResponse]:
-        tasks = [self(username) for username in usernames]
-        return await asyncio.gather(*tasks)
+        keys = self._http._rate_limiter.distribute(len(usernames))
 
+        async def fetch(username: str, key: str) -> StatsResponse:
+            data = await self._http.get_with_key(f"/v1/stats/{username}", key)
+            return StatsResponse.model_validate(data)
 
+        return await run_batched(usernames, keys, fetch)

@@ -10,10 +10,11 @@ load_dotenv()
 
 
 async def main():
-    async with DonutClient(os.getenv("API_KEY")) as client:
-
+    keys = os.getenv("API_KEYS").split("\n")
+    print("Keys: ", len(keys))
+    async with DonutClient(keys) as client:
         start = time.time()
-        leaderboards = await client.leaderboards.batch("money", 1, 100)
+        leaderboards = await client.leaderboards.batch("money", 1, 240)
 
         total = 0
         for leaderboard in leaderboards:
