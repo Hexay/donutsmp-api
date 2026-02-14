@@ -174,6 +174,7 @@ class LookupResponse(SingleResponse[LookupResult]):
 
 
 class Stats(BaseModel):
+    username: str | None = None
     money: str | None = None
     shards: str | None = None
     playtime: str | None = None
@@ -185,17 +186,17 @@ class Stats(BaseModel):
     money_made_from_sell: str | None = None
     money_spent_on_shop: str | None = None
 
+    _LABELS = {
+        "money": "Money", "shards": "Shards", "playtime": "Playtime",
+        "kills": "Kills", "deaths": "Deaths", "mobs_killed": "Mobs Killed",
+        "broken_blocks": "Blocks Broken", "placed_blocks": "Blocks Placed",
+        "money_made_from_sell": "Sell Income", "money_spent_on_shop": "Shop Spent",
+    }
+
     def __str__(self) -> str:
-        lines = []
-        for field, label in [
-            ("money", "Money"), ("shards", "Shards"), ("playtime", "Playtime"),
-            ("kills", "Kills"), ("deaths", "Deaths"), ("mobs_killed", "Mobs Killed"),
-            ("broken_blocks", "Blocks Broken"), ("placed_blocks", "Blocks Placed"),
-            ("money_made_from_sell", "Sell Income"), ("money_spent_on_shop", "Shop Spent")
-        ]:
-            if val := getattr(self, field):
-                lines.append(f"{label}: {val}")
-        return "\n".join(lines)
+        header = self.username or "Unknown"
+        lines = [f"{self._LABELS[f]}: {v}" for f in self._LABELS if (v := getattr(self, f))]
+        return f"{header}\n" + "\n".join(lines) if lines else header
 
 
 class StatsResponse(SingleResponse[Stats]):

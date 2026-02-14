@@ -134,15 +134,21 @@ class StatsEndpoint:
     def __init__(self, http: HTTPClient):
         self._http = http
 
+    def _parse(self, data: dict, username: str) -> StatsResponse:
+        response = StatsResponse.model_validate(data)
+        if response.result:
+            response.result.username = username
+        return response
+
     async def __call__(self, username: str) -> StatsResponse:
         data = await self._http.get(f"/v1/stats/{username}")
-        return StatsResponse.model_validate(data)
+        return self._parse(data, username)
 
     async def batch(self, usernames: list[str]) -> list[StatsResponse]:
         keys = self._http._rate_limiter.distribute(len(usernames))
 
         async def fetch(username: str, key: str) -> StatsResponse:
             data = await self._http.get_with_key(f"/v1/stats/{username}", key)
-            return StatsResponse.model_validate(data)
+            return self._parse(data, username)
 
         return await run_batched(usernames, keys, fetch)

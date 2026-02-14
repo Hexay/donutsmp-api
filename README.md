@@ -47,7 +47,11 @@ client = DonutClient(
 ### Stats
 
 ```python
+# Single lookup
 stats = await client.stats("username")
+
+# Batch lookup
+stats_list = await client.stats.batch(["user1", "user2", "user3"])
 ```
 
 ### Leaderboards
@@ -92,6 +96,7 @@ players = await client.lookup.batch(["user1", "user2", "user3"])
 See the [examples](./examples) directory for more usage patterns:
 
 - [`stats.py`](./examples/stats.py) - Basic stats lookup
+- [`batch_stats.py`](./examples/batch_stats.py) - Batch stats lookup for multiple users
 - [`batch_leaderboard.py`](./examples/batch_leaderboard.py) - Fetching multiple leaderboard pages
 - [`finished_auctions.py`](./examples/finished_auctions.py) - Polling for new auction transactions
 - [`leaderboard_estimation.py`](./examples/leaderboard_estimation.py) - Estimating total server wealth using adaptive sampling

@@ -51,6 +51,7 @@ class HTTPClient:
         if response.status >= 500:
             raise ServerError(f"Server error: {response.status}")
         if response.status == 429:
+            print(f"Rate limited: {response.status}")
             return {}
         if not response.ok:
             raise DonutAPIError(f"Request failed: {response.status}")

@@ -42,26 +42,28 @@ class RateLimiter:
     def distribute(self, count: int) -> list[list[str]]:
         now = time.monotonic()
         available = {k: self._available(k, now) for k in self._keys}
+        total_available = sum(available.values())
         
-        batches: list[list[str]] = []
+        batch: list[str] = []
         remaining = count
+        key_idx = 0
+        num_keys = len(self._keys)
         
+        # First, distribute using available capacity in round-robin
+        while remaining > 0 and total_available > 0:
+            key = self._keys[key_idx]
+            if available[key] > 0:
+                batch.append(key)
+                available[key] -= 1
+                total_available -= 1
+                remaining -= 1
+            key_idx = (key_idx + 1) % num_keys
+        
+        # If we still need more, distribute remaining in round-robin (will require waiting)
         while remaining > 0:
-            batch: list[str] = []
-            for key in self._keys:
-                take = min(remaining, available[key])
-                batch.extend([key] * take)
-                available[key] -= take
-                remaining -= take
-                if remaining == 0:
-                    break
-            
-            if batch:
-                batches.append(batch)
-            else:
-                batch_size = min(remaining, self.capacity)
-                batch = [self._keys[i % len(self._keys)] for i in range(batch_size)]
-                batches.append(batch)
-                remaining -= batch_size
+            key = self._keys[key_idx]
+            batch.append(key)
+            remaining -= 1
+            key_idx = (key_idx + 1) % num_keys
         
-        return batches
+        return [batch] if batch else []

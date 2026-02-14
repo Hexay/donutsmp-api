@@ -19,7 +19,7 @@ async def main():
         total = 0
         for leaderboard in leaderboards:
             for entry in leaderboard:
-                total += float(entry.value or 0)
+                total += entry.value
 
         end = time.time()
         formatted_total = format_number(total)
