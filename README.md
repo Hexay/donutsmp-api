@@ -40,7 +40,7 @@ asyncio.run(main())
 client = DonutClient(
     api_keys="key",              # Single key or list of keys
     timeout=30.0,                # Request timeout in seconds
-    requests_per_minute=250      # Rate limit
+    requests_per_minute=250      # Rate limit per key
 )
 ```
 
