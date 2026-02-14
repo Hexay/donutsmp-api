@@ -36,7 +36,7 @@ async def run_batched(
     for i, batch_keys in enumerate(keys):
         batch_items = items[offset:offset + len(batch_keys)]
         if i > 0:
-            await asyncio.sleep(60)
+            await asyncio.sleep(65)
         batch_results = await asyncio.gather(*[fetch(item, key) for item, key in zip(batch_items, batch_keys, strict=True)])
         results.extend(batch_results)
         offset += len(batch_keys)

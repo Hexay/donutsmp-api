@@ -21,7 +21,7 @@ class RateLimiter:
 
     def _prune(self, key: str, now: float) -> None:
         ts = self._timestamps[key]
-        cutoff = now - 60
+        cutoff = now - 65
         while ts and ts[0] < cutoff:
             ts.popleft()
 
@@ -49,21 +49,23 @@ class RateLimiter:
         key_idx = 0
         num_keys = len(self._keys)
         
-        # First, distribute using available capacity in round-robin
         while remaining > 0 and total_available > 0:
             key = self._keys[key_idx]
             if available[key] > 0:
                 batch.append(key)
+                self._timestamps[key].append(now)
                 available[key] -= 1
                 total_available -= 1
                 remaining -= 1
             key_idx = (key_idx + 1) % num_keys
         
-        # If we still need more, distribute remaining in round-robin (will require waiting)
-        while remaining > 0:
-            key = self._keys[key_idx]
-            batch.append(key)
-            remaining -= 1
-            key_idx = (key_idx + 1) % num_keys
+        if remaining > 0:
+            overflow: list[str] = []
+            while remaining > 0:
+                key = self._keys[key_idx]
+                overflow.append(key)
+                remaining -= 1
+                key_idx = (key_idx + 1) % num_keys
+            return [batch, overflow] if batch else [overflow]
         
         return [batch] if batch else []
