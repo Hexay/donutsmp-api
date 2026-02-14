@@ -82,6 +82,7 @@ class HTTPClient:
         return await self._request("GET", endpoint, key, json, params or None)
 
     async def get_with_key(self, endpoint: str, api_key: str, json: dict[str, Any] | None = None, **params: Any) -> dict[str, Any]:
+        self._rate_limiter.record(api_key)
         return await self._request("GET", endpoint, api_key, json, params or None)
 
     async def put(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
